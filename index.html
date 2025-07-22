@@ -766,5 +766,44 @@
             clearMessages();
         }
     </script>
+
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDE-EjrJwdx0r83JUxO1QwAyKHhcFGISGs4Q",
+    authDomain: "studentfeedback-874b3.firebaseapp.com",
+    projectId: "studentfeedback-874b3",
+    storageBucket: "studentfeedback-874b3.appspot.com",
+    messagingSenderId: "872418891188",
+    appId: "1:872418891188:web:88a077dfa4e1ef6a9f4ee1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const feedbackForm = document.getElementById("feedbackForm");
+
+  feedbackForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(feedbackForm);
+    const feedbackData = Object.fromEntries(formData.entries());
+    feedbackData.userEmail = JSON.parse(localStorage.getItem("currentUser"))?.email || "anonymous";
+    feedbackData.submittedAt = new Date().toISOString();
+
+    try {
+      await addDoc(collection(db, "student_feedbacks"), feedbackData);
+      alert("✅ Feedback submitted to Firebase!");
+      feedbackForm.reset();
+      document.getElementById("subjectsContainer").innerHTML = "";
+    } catch (error) {
+      alert("❌ Error submitting feedback: " + error.message);
+    }
+  });
+</script>
+
+
 </body>
 </html>
